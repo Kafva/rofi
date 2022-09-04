@@ -1045,6 +1045,7 @@ static cairo_surface_t *get_net_wm_icon(xcb_window_t xid,
 }
 static cairo_surface_t *_get_icon(const Mode *sw, unsigned int selected_line,
                                   unsigned int size) {
+  cairo_surface_t* netwm_icon = NULL;
   cairo_surface_t* icon = NULL;
   WindowModePrivateData *rmpd = mode_get_private_data(sw);
   client *c = window_client(rmpd, rmpd->ids->array[selected_line]);
@@ -1064,7 +1065,7 @@ static cairo_surface_t *_get_icon(const Mode *sw, unsigned int selected_line,
     c->thumbnail_checked = TRUE;
   }
   if (c->icon == NULL && c->icon_checked == FALSE) {
-    c->icon = get_net_wm_icon(rmpd->ids->array[selected_line], size);
+    netwm_icon = get_net_wm_icon(rmpd->ids->array[selected_line], size);
     c->icon_checked = TRUE;
   }
   if (c->class) {
@@ -1078,6 +1079,8 @@ static cairo_surface_t *_get_icon(const Mode *sw, unsigned int selected_line,
     }
   }
   c->icon_fetch_size = size;
+  if (icon==NULL)
+    c->icon = netwm_icon;
   return icon != NULL ? icon : c->icon;
 }
 
