@@ -1344,6 +1344,8 @@ static cairo_surface_t *_get_icon(const Mode *sw, unsigned int selected_line,
     }
     dr->icon_fetch_uid = rofi_icon_fetcher_query(dr->icon_name, height);
     dr->icon_fetch_size = height;
+    g_debug("[drun] Using icon_name='%s'", dr->icon_name);
+
     cairo_surface_t *icon = rofi_icon_fetcher_get(dr->icon_fetch_uid);
     return icon;
   }

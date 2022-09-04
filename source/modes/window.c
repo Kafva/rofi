@@ -59,6 +59,7 @@
 
 #include "mode-private.h"
 #include "rofi-icon-fetcher.h"
+#include "class2icon.h"
 
 #define WINLIST 32
 
@@ -1043,6 +1044,18 @@ static cairo_surface_t *get_net_wm_icon(xcb_window_t xid,
   free(r);
   return surface;
 }
+
+/** Translate a class name to an explicitly set icon string if available */
+static const char* get_explicit_icon_mapping(char* class){
+  for (size_t i = 0; i < CLASS_NAMES_CNT; i++) {
+    if (strcmp(CLASS_NAMES[i], class) == 0) {
+      return ICON_NAMES[i];
+      break;
+    }
+  }
+  return NULL;
+}
+
 static cairo_surface_t *_get_icon(const Mode *sw, unsigned int selected_line,
                                   unsigned int size) {
   cairo_surface_t* netwm_icon = NULL;
@@ -1073,7 +1086,11 @@ static cairo_surface_t *_get_icon(const Mode *sw, unsigned int selected_line,
       icon = rofi_icon_fetcher_get(c->icon_fetch_uid);
     } else {
       char *class_lower = g_utf8_strdown(c->class, -1);
-      c->icon_fetch_uid = rofi_icon_fetcher_query(class_lower, size);
+      const char* icon_name = get_explicit_icon_mapping(class_lower);
+      g_debug("[win] Using class='%s' for icon", class_lower);
+
+      c->icon_fetch_uid = rofi_icon_fetcher_query(icon_name != NULL ?
+                                                 icon_name : class_lower, size);
       g_free(class_lower);
       icon = rofi_icon_fetcher_get(c->icon_fetch_uid);
     }
