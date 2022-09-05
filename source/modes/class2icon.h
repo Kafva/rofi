@@ -7,10 +7,12 @@
 
 const char* CLASS_NAMES[] = {
   "alacritty",
-  "gimp-2.10"
+  "gimp-2.10",
+  "virtualbox manager"
 };
 
 char* ICON_NAMES[] = {
   "Alacritty",
-  "gimp"
+  "gimp",
+  "virtualbox"
 };

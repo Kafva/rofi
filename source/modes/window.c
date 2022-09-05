@@ -1058,7 +1058,6 @@ static const char* get_explicit_icon_mapping(char* class){
 
 static cairo_surface_t *_get_icon(const Mode *sw, unsigned int selected_line,
                                   unsigned int size) {
-  cairo_surface_t* netwm_icon = NULL;
   cairo_surface_t* icon = NULL;
   WindowModePrivateData *rmpd = mode_get_private_data(sw);
   client *c = window_client(rmpd, rmpd->ids->array[selected_line]);
@@ -1077,17 +1076,13 @@ static cairo_surface_t *_get_icon(const Mode *sw, unsigned int selected_line,
     c->icon = x11_helper_get_screenshot_surface_window(c->window, size);
     c->thumbnail_checked = TRUE;
   }
-  if (c->icon == NULL && c->icon_checked == FALSE) {
-    netwm_icon = get_net_wm_icon(rmpd->ids->array[selected_line], size);
-    c->icon_checked = TRUE;
-  }
   if (c->class) {
     if (c->icon_fetch_uid > 0) {
       icon = rofi_icon_fetcher_get(c->icon_fetch_uid);
     } else {
       char *class_lower = g_utf8_strdown(c->class, -1);
       const char* icon_name = get_explicit_icon_mapping(class_lower);
-      g_debug("[win] Using class='%s' for icon", class_lower);
+      g_debug("[win] Using class='%s' -> '%s' for icon", class_lower, icon_name);
 
       c->icon_fetch_uid = rofi_icon_fetcher_query(icon_name != NULL ?
                                                  icon_name : class_lower, size);
@@ -1095,10 +1090,13 @@ static cairo_surface_t *_get_icon(const Mode *sw, unsigned int selected_line,
       icon = rofi_icon_fetcher_get(c->icon_fetch_uid);
     }
   }
-  c->icon_fetch_size = size;
-  if (icon==NULL)
-    c->icon = netwm_icon;
-  return icon != NULL ? icon : c->icon;
+  if (icon != NULL) {
+    return icon;
+  } else if (c->icon == NULL && c->icon_checked == FALSE) {
+    c->icon = get_net_wm_icon(rmpd->ids->array[selected_line], size);
+    c->icon_checked = TRUE;
+  }
+  return c->icon;
 }
 
 #include "mode-private.h"
