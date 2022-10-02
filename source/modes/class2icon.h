@@ -8,11 +8,13 @@
 const char* CLASS_NAMES[] = {
   "alacritty",
   "gimp-2.10",
-  "virtualbox manager"
+  "virtualbox manager",
+  "firefox-default"
 };
 
 char* ICON_NAMES[] = {
   "Alacritty",
   "gimp",
-  "virtualbox"
+  "virtualbox",
+  "firefox-nightly"
 };
